@@ -2,26 +2,30 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronRight, MapPin, Sparkles, Compass } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const BG = '#17212B';
+const CARD = '#1C2733';
+const BLUE = '#2EA6FF';
+const TEXT = '#E8F1F8';
+const GREY = '#8899A8';
+const DIM = '#3A4D5C';
 
 const slides = [
   {
-    icon: <Sparkles size={48} className="text-blue-600" />,
+    emoji: '✨',
     title: 'AI планирует за тебя',
     desc: 'Укажи направление, даты и бюджет — получи готовый маршрут за 15 секунд. Без 10 открытых вкладок.',
-    bg: 'from-blue-50 to-white',
   },
   {
-    icon: <MapPin size={48} className="text-blue-600" />,
+    emoji: '📍',
     title: 'От двери до отеля',
     desc: 'Такси → аэропорт → рейс → размещение → экскурсии. Всё в одном месте с реальными ссылками на бронирование.',
-    bg: 'from-violet-50 to-white',
   },
   {
-    icon: <Compass size={48} className="text-blue-600" />,
+    emoji: '🧭',
     title: 'Гид прямо на улице',
     desc: 'Направь камеру на здание или найди любое место — AI расскажет историю и интересные факты.',
-    bg: 'from-emerald-50 to-white',
   },
 ];
 
@@ -37,46 +41,56 @@ export default function OnboardingPage() {
     }
   };
 
-  const skip = () => router.push('/auth');
-
   const slide = slides[current];
 
   return (
-    <div className={`min-h-dvh flex flex-col bg-gradient-to-b ${slide.bg} transition-all duration-500`}>
-      <div className="flex justify-between items-center px-5 pt-12">
-        <div className="text-xl font-bold text-blue-600">ROAMI</div>
-        <button onClick={skip} className="text-slate-400 text-sm font-medium">
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', backgroundColor: BG }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '52px 24px 0' }}>
+        <div style={{ color: BLUE, fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>ROAMI</div>
+        <button onClick={() => router.push('/auth')} style={{ color: GREY, fontSize: 14, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
           Пропустить
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <div className="mb-8 p-6 bg-white rounded-3xl shadow-sm">
-          {slide.icon}
-        </div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-4 leading-tight">
-          {slide.title}
-        </h1>
-        <p className="text-slate-500 text-base leading-relaxed">
-          {slide.desc}
-        </p>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 32px' }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            style={{ textAlign: 'center' }}
+          >
+            <div style={{ width: 96, height: 96, borderRadius: 28, backgroundColor: CARD, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', fontSize: 44 }}>
+              {slide.emoji}
+            </div>
+            <h1 style={{ color: TEXT, fontSize: 26, fontWeight: 700, lineHeight: 1.2, marginBottom: 16 }}>
+              {slide.title}
+            </h1>
+            <p style={{ color: GREY, fontSize: 15, lineHeight: 1.65 }}>
+              {slide.desc}
+            </p>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      <div className="px-5 pb-10">
-        <div className="flex justify-center gap-2 mb-8">
+      <div style={{ padding: '0 24px 44px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 28 }}>
           {slides.map((_, i) => (
-            <div
+            <motion.div
               key={i}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === current ? 'w-6 bg-blue-600' : 'w-2 bg-slate-200'
-              }`}
+              animate={{ width: i === current ? 24 : 8, backgroundColor: i === current ? BLUE : DIM }}
+              transition={{ duration: 0.3 }}
+              style={{ height: 8, borderRadius: 4 }}
             />
           ))}
         </div>
-
-        <button onClick={next} className="btn-primary">
+        <button
+          onClick={next}
+          style={{ width: '100%', backgroundColor: BLUE, borderRadius: 16, padding: '17px', color: '#FFF', fontSize: 16, fontWeight: 600, border: 'none', cursor: 'pointer' }}
+        >
           {current < slides.length - 1 ? 'Далее' : 'Начать'}
-          <ChevronRight size={18} />
         </button>
       </div>
     </div>

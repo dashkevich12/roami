@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { AppState, User, GeneratedRoute, Booking } from './types';
-import { MOCK_ROUTES, MOCK_BOOKINGS } from './mockData';
+import type { AppState, User, GeneratedRoute, Booking, SavedRoute, RouteAuthor } from './types';
+import { MOCK_ROUTES, MOCK_BOOKINGS, MOCK_SAVED_ROUTES } from './mockData';
 
 const defaultUser: User = {
   id: '1',
@@ -10,6 +10,12 @@ const defaultUser: User = {
   email: 'avdash14vich@gmail.com',
   phone: '+7 999 123-45-67',
   status: 'free',
+  username: 'sashadash',
+  rating: 4.6,
+  reviewCount: 128,
+  totalSaves: 340,
+  coins: 2450,
+  level: 7,
   stats: { routesCreated: 2, countriesVisited: 1 },
 };
 
@@ -17,6 +23,8 @@ interface AppContextType extends AppState {
   login: (email: string, name: string) => void;
   logout: () => void;
   addRoute: (route: GeneratedRoute) => void;
+  saveRoute: (route: GeneratedRoute, author: RouteAuthor) => void;
+  publishRoute: (routeId: string) => void;
   upgradeToPermium: () => void;
   decrementAI: () => void;
   decrementGuide: () => void;
@@ -28,6 +36,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [routes, setRoutes] = useState<GeneratedRoute[]>(MOCK_ROUTES);
+  const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>(MOCK_SAVED_ROUTES);
   const [bookings] = useState<Booking[]>(MOCK_BOOKINGS);
   const [aiRequestsLeft, setAiRequestsLeft] = useState(3);
   const [guideRequestsLeft, setGuideRequestsLeft] = useState(5);
@@ -61,7 +70,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const addRoute = (route: GeneratedRoute) => {
-    setRoutes(prev => [route, ...prev]);
+    setRoutes(prev => [{ ...route, isOwnCreation: true }, ...prev]);
+  };
+
+  const saveRoute = (route: GeneratedRoute, author: RouteAuthor) => {
+    const saved: SavedRoute = {
+      ...route,
+      id: `s_${route.id}_${Date.now()}`,
+      originalAuthor: author,
+      savedAt: new Date().toISOString(),
+      isModified: false,
+      isOwnCreation: false,
+      isPublished: false,
+    };
+    setSavedRoutes(prev => [saved, ...prev]);
+  };
+
+  const publishRoute = (routeId: string) => {
+    setRoutes(prev =>
+      prev.map(r => r.id === routeId ? { ...r, isPublished: true } : r)
+    );
   };
 
   const upgradeToPermium = () => {
@@ -87,10 +115,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      user, isAuthenticated, routes, bookings,
+      user, isAuthenticated, routes, savedRoutes, bookings,
       aiRequestsLeft, guideRequestsLeft,
-      login, logout, addRoute, upgradeToPermium,
-      decrementAI, decrementGuide,
+      login, logout, addRoute, saveRoute, publishRoute,
+      upgradeToPermium, decrementAI, decrementGuide,
     }}>
       {children}
     </AppContext.Provider>

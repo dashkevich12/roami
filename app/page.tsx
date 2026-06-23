@@ -11,19 +11,19 @@ export default function RootPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (isAuthenticated) {
-        router.replace('/search');
+        router.replace('/feed');
       } else {
         router.replace('/onboarding');
       }
-    }, 800);
+    }, 900);
     return () => clearTimeout(timer);
   }, [isAuthenticated, router]);
 
   return (
-    <div className="flex items-center justify-center min-h-dvh bg-[#F8FAFC]">
-      <div className="text-center fade-in-up">
-        <div className="text-5xl font-bold text-blue-600 tracking-tight mb-2">ROAMI</div>
-        <div className="text-slate-400 text-sm">AI Travel Planner</div>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh', backgroundColor: '#17212B' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ color: '#2EA6FF', fontSize: 42, fontWeight: 800, letterSpacing: -1.5, marginBottom: 6 }}>ROAMI</div>
+        <div style={{ color: '#6D7C8B', fontSize: 13 }}>AI Travel Planner</div>
       </div>
     </div>
   );

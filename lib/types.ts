@@ -7,6 +7,12 @@ export interface User {
   phone: string;
   status: UserStatus;
   avatar?: string;
+  username?: string;
+  rating?: number;
+  reviewCount?: number;
+  totalSaves?: number;
+  coins?: number;
+  level?: number;
   passport?: {
     series: string;
     number: string;
@@ -17,6 +23,23 @@ export interface User {
     routesCreated: number;
     countriesVisited: number;
   };
+}
+
+export interface RouteAuthor {
+  id: string;
+  name: string;
+  initial: string;
+  rating: number;
+}
+
+export interface Review {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorInitial: string;
+  rating: number;
+  text: string;
+  date: string;
 }
 
 export type RouteStatus = 'upcoming' | 'completed' | 'draft';
@@ -45,6 +68,10 @@ export interface GeneratedRoute {
   status: RouteStatus;
   budget: string;
   totalCost?: string;
+  isOwnCreation?: boolean;
+  isPublished?: boolean;
+  publishedSaves?: number;
+  publishedReviewCount?: number;
   transfer: {
     toAirport: string;
     cost: string;
@@ -70,6 +97,12 @@ export interface GeneratedRoute {
   createdAt: string;
 }
 
+export interface SavedRoute extends GeneratedRoute {
+  originalAuthor: RouteAuthor;
+  savedAt: string;
+  isModified: boolean;
+}
+
 export interface Booking {
   id: string;
   type: 'flight' | 'hotel';
@@ -85,6 +118,7 @@ export interface AppState {
   user: User | null;
   isAuthenticated: boolean;
   routes: GeneratedRoute[];
+  savedRoutes: SavedRoute[];
   bookings: Booking[];
   aiRequestsLeft: number;
   guideRequestsLeft: number;
