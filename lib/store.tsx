@@ -24,6 +24,7 @@ interface AppContextType extends AppState {
   logout: () => void;
   addRoute: (route: GeneratedRoute) => void;
   saveRoute: (route: GeneratedRoute, author: RouteAuthor) => void;
+  unsaveRoute: (originalRouteId: string) => void;
   publishRoute: (routeId: string) => void;
   upgradeToPermium: () => void;
   decrementAI: () => void;
@@ -86,6 +87,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSavedRoutes(prev => [saved, ...prev]);
   };
 
+  const unsaveRoute = (originalRouteId: string) => {
+    setSavedRoutes(prev => prev.filter(r => !r.id.startsWith(`s_${originalRouteId}`)));
+  };
+
   const publishRoute = (routeId: string) => {
     setRoutes(prev =>
       prev.map(r => r.id === routeId ? { ...r, isPublished: true } : r)
@@ -117,7 +122,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider value={{
       user, isAuthenticated, routes, savedRoutes, bookings,
       aiRequestsLeft, guideRequestsLeft,
-      login, logout, addRoute, saveRoute, publishRoute,
+      login, logout, addRoute, saveRoute, unsaveRoute, publishRoute,
       upgradeToPermium, decrementAI, decrementGuide,
     }}>
       {children}

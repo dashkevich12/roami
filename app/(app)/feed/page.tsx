@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Bookmark, BookmarkCheck, Star, MapPin, Flame, Calendar, ChevronRight, Sparkles } from 'lucide-react';
+import { Search, Bookmark, BookmarkCheck, Star, MapPin, Flame, Calendar, ChevronRight, Sparkles, X, Plane } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '@/lib/store';
 import type { GeneratedRoute, RouteAuthor } from '@/lib/types';
@@ -15,7 +15,7 @@ const GREY = '#8899A8';
 const DIM = '#4A5C6A';
 const GOLD = '#F59E0B';
 
-// --- Mock feed data (not from store, simulates public content) ---
+// ─── Mock feed data ────────────────────────────────────────────────────────────
 
 const HOT_DEALS = [
   { id: 'h1', city: 'Дубай', emoji: '🇦🇪', price: '28 900 ₽', oldPrice: '52 000 ₽', days: 7, img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80' },
@@ -38,98 +38,52 @@ const EVENTS = [
   { id: 'e3', title: 'Фестиваль фонарей', city: 'Чиангмай, Таиланд', dates: '5 нояб', emoji: '🏮', color: '#2B1E10' },
 ];
 
-const PUBLIC_ROUTES: (GeneratedRoute & { authorName: string; authorInitial: string; authorRating: number; saves: number; reviews: number })[] = [
+type PublicRoute = GeneratedRoute & { authorName: string; authorInitial: string; authorRating: number; saves: number; reviews: number };
+
+const PUBLIC_ROUTES: PublicRoute[] = [
   {
-    id: 'p1',
-    destination: 'Стамбул',
-    country: 'Турция',
+    id: 'p1', destination: 'Стамбул', country: 'Турция',
     coverImage: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80',
-    dateFrom: '2026-08-10',
-    dateTo: '2026-08-17',
-    status: 'upcoming',
-    budget: 'средний',
-    totalCost: '65 000 ₽',
+    dateFrom: '2026-08-10', dateTo: '2026-08-17', status: 'upcoming', budget: 'средний', totalCost: '65 000 ₽',
     transfer: { toAirport: 'Аэроэкспресс', cost: '500 ₽' },
     flight: { from: 'Москва (SVO)', to: 'Стамбул (IST)', airline: 'Turkish Airlines', departure: '07:30', arrival: '10:45', price: '18 000 ₽', aviasalesUrl: '#' },
     hotel: { name: 'Four Seasons Bosphorus', stars: 5, address: 'Beşiktaş, Стамбул', price: '8 500 ₽/ночь', bookingUrl: '#' },
-    days: [],
-    createdAt: '2026-06-01T00:00:00Z',
-    authorName: 'Максим К.',
-    authorInitial: 'М',
-    authorRating: 4.8,
-    saves: 312,
-    reviews: 24,
+    days: [], createdAt: '2026-06-01T00:00:00Z',
+    authorName: 'Максим К.', authorInitial: 'М', authorRating: 4.8, saves: 312, reviews: 24,
   },
   {
-    id: 'p2',
-    destination: 'Бали',
-    country: 'Индонезия',
+    id: 'p2', destination: 'Бали', country: 'Индонезия',
     coverImage: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80',
-    dateFrom: '2026-09-05',
-    dateTo: '2026-09-15',
-    status: 'upcoming',
-    budget: 'бизнес',
-    totalCost: '180 000 ₽',
+    dateFrom: '2026-09-05', dateTo: '2026-09-15', status: 'upcoming', budget: 'бизнес', totalCost: '180 000 ₽',
     transfer: { toAirport: 'Такси', cost: '1 200 ₽' },
     flight: { from: 'Москва (SVO)', to: 'Денпасар (DPS)', airline: 'Singapore Air', departure: '22:10', arrival: '18:00 +1', price: '72 000 ₽', aviasalesUrl: '#' },
     hotel: { name: 'Komaneka at Bisma', stars: 5, address: 'Убуд, Бали', price: '14 000 ₽/ночь', bookingUrl: '#' },
-    days: [],
-    createdAt: '2026-05-20T00:00:00Z',
-    authorName: 'Анна П.',
-    authorInitial: 'А',
-    authorRating: 4.9,
-    saves: 489,
-    reviews: 41,
+    days: [], createdAt: '2026-05-20T00:00:00Z',
+    authorName: 'Анна П.', authorInitial: 'А', authorRating: 4.9, saves: 489, reviews: 41,
   },
   {
-    id: 'p3',
-    destination: 'Прага',
-    country: 'Чехия',
+    id: 'p3', destination: 'Прага', country: 'Чехия',
     coverImage: 'https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=800&q=80',
-    dateFrom: '2026-10-01',
-    dateTo: '2026-10-07',
-    status: 'upcoming',
-    budget: 'эконом',
-    totalCost: '45 000 ₽',
+    dateFrom: '2026-10-01', dateTo: '2026-10-07', status: 'upcoming', budget: 'эконом', totalCost: '45 000 ₽',
     transfer: { toAirport: 'Метро', cost: '55 ₽' },
     flight: { from: 'Москва (SVO)', to: 'Прага (PRG)', airline: 'Czech Airlines', departure: '11:00', arrival: '12:30', price: '15 000 ₽', aviasalesUrl: '#' },
     hotel: { name: 'Augustine Hotel', stars: 4, address: 'Staré Město, Прага', price: '5 000 ₽/ночь', bookingUrl: '#' },
-    days: [],
-    createdAt: '2026-06-05T00:00:00Z',
-    authorName: 'Сергей В.',
-    authorInitial: 'С',
-    authorRating: 4.6,
-    saves: 178,
-    reviews: 15,
+    days: [], createdAt: '2026-06-05T00:00:00Z',
+    authorName: 'Сергей В.', authorInitial: 'С', authorRating: 4.6, saves: 178, reviews: 15,
   },
   {
-    id: 'p4',
-    destination: 'Мальдивы',
-    country: 'Мальдивы',
+    id: 'p4', destination: 'Мальдивы', country: 'Мальдивы',
     coverImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
-    dateFrom: '2026-11-20',
-    dateTo: '2026-11-30',
-    status: 'upcoming',
-    budget: 'бизнес',
-    totalCost: '320 000 ₽',
+    dateFrom: '2026-11-20', dateTo: '2026-11-30', status: 'upcoming', budget: 'бизнес', totalCost: '320 000 ₽',
     transfer: { toAirport: 'Такси', cost: '1 500 ₽' },
     flight: { from: 'Москва (SVO)', to: 'Мале (MLE)', airline: 'Emirates', departure: '10:00', arrival: '20:30', price: '95 000 ₽', aviasalesUrl: '#' },
     hotel: { name: 'Gili Lankanfushi', stars: 5, address: 'Северный атолл Мале', price: '45 000 ₽/ночь', bookingUrl: '#' },
-    days: [],
-    createdAt: '2026-06-10T00:00:00Z',
-    authorName: 'Ольга Р.',
-    authorInitial: 'О',
-    authorRating: 4.7,
-    saves: 621,
-    reviews: 52,
+    days: [], createdAt: '2026-06-10T00:00:00Z',
+    authorName: 'Ольга Р.', authorInitial: 'О', authorRating: 4.7, saves: 621, reviews: 52,
   },
 ];
 
-const BUDGET_COLOR: Record<string, string> = {
-  'эконом': '#4ADE80',
-  'средний': BLUE,
-  'бизнес': GOLD,
-};
+const BUDGET_COLOR: Record<string, string> = { 'эконом': '#4ADE80', 'средний': BLUE, 'бизнес': GOLD };
 
 function formatDateRange(from: string, to: string) {
   const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
@@ -138,7 +92,7 @@ function formatDateRange(from: string, to: string) {
   return `${a.getDate()} ${months[a.getMonth()]} – ${b.getDate()} ${months[b.getMonth()]} · ${days} дн.`;
 }
 
-// --- Subcomponents ---
+// ─── Small cards ────────────────────────────────────────────────────────────────
 
 function HotDealCard({ deal }: { deal: typeof HOT_DEALS[0] }) {
   const discount = Math.round((1 - parseInt(deal.price.replace(/\D/g, '')) / parseInt(deal.oldPrice.replace(/\D/g, ''))) * 100);
@@ -182,24 +136,177 @@ function EventCard({ ev }: { ev: typeof EVENTS[0] }) {
         <div style={{ color: TEXT, fontSize: 15, fontWeight: 600 }}>{ev.title}</div>
         <div style={{ color: GREY, fontSize: 13, marginTop: 2 }}>{ev.city}</div>
       </div>
-      <div style={{ textAlign: 'right' }}>
-        <div style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 8, padding: '4px 10px' }}>
-          <span style={{ color: GREY, fontSize: 11, fontWeight: 500 }}>{ev.dates}</span>
-        </div>
+      <div style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 8, padding: '4px 10px' }}>
+        <span style={{ color: GREY, fontSize: 11, fontWeight: 500 }}>{ev.dates}</span>
       </div>
     </div>
   );
 }
 
-function PublicRouteCard({ route, onSave, isSaved }: {
-  route: typeof PUBLIC_ROUTES[0];
-  onSave: () => void;
-  isSaved: boolean;
+// ─── Route detail bottom sheet ──────────────────────────────────────────────────
+
+function RouteDetailSheet({ route, isSaved, onSave, onClose }: {
+  route: PublicRoute; isSaved: boolean; onSave: () => void; onClose: () => void;
+}) {
+  const totalDays = Math.round((new Date(route.dateTo).getTime() - new Date(route.dateFrom).getTime()) / 86400000);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(0,0,0,0.65)', maxWidth: 430, left: '50%', transform: 'translateX(-50%)' }}
+    >
+      <motion.div
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+        onClick={e => e.stopPropagation()}
+        style={{ backgroundColor: BG, borderRadius: '24px 24px 0 0', maxHeight: '90dvh', overflowY: 'auto', paddingBottom: 'env(safe-area-inset-bottom, 20px)' }}
+      >
+        {/* Drag handle */}
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 4 }}>
+          <div style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: DIM }} />
+        </div>
+
+        {/* Close */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 20px 16px' }}>
+          <div>
+            <div style={{ color: TEXT, fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>{route.destination}</div>
+            <div style={{ color: GREY, fontSize: 13, marginTop: 2 }}>{route.country} · {formatDateRange(route.dateFrom, route.dateTo)}</div>
+          </div>
+          <button onClick={onClose} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: CARD2, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
+            <X size={16} color={GREY} />
+          </button>
+        </div>
+
+        {/* Photo */}
+        <div style={{ margin: '0 20px 16px', borderRadius: 18, overflow: 'hidden', height: 180, position: 'relative' }}>
+          <img src={route.coverImage} alt={route.destination} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }} />
+          {/* Author */}
+          <div style={{ position: 'absolute', bottom: 12, left: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: BLUE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#FFF', fontSize: 13, fontWeight: 700 }}>{route.authorInitial}</span>
+            </div>
+            <div>
+              <div style={{ color: '#FFF', fontSize: 13, fontWeight: 600 }}>{route.authorName}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                <Star size={10} color={GOLD} fill={GOLD} />
+                <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>{route.authorRating}</span>
+              </div>
+            </div>
+          </div>
+          {/* Budget badge */}
+          <div style={{ position: 'absolute', top: 12, right: 12, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', borderRadius: 10, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ color: TEXT, fontSize: 12, fontWeight: 600 }}>{route.budget}</span>
+            <div style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: BUDGET_COLOR[route.budget] ?? GREY }} />
+          </div>
+        </div>
+
+        <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* Stats */}
+          <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ flex: 1, backgroundColor: CARD, borderRadius: 14, padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+              <span style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>{route.saves}</span>
+              <span style={{ color: GREY, fontSize: 12 }}>сохранений</span>
+            </div>
+            <div style={{ flex: 1, backgroundColor: CARD, borderRadius: 14, padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+              <span style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>{route.reviews}</span>
+              <span style={{ color: GREY, fontSize: 12 }}>отзывов</span>
+            </div>
+            <div style={{ flex: 1, backgroundColor: CARD, borderRadius: 14, padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+              <span style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>{totalDays}</span>
+              <span style={{ color: GREY, fontSize: 12 }}>дней</span>
+            </div>
+          </div>
+
+          {/* Flight */}
+          <div style={{ backgroundColor: CARD, borderRadius: 16, padding: 16 }}>
+            <div style={{ color: GREY, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Авиарейс</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>{route.flight.departure}</div>
+                <div style={{ color: GREY, fontSize: 11 }}>{route.flight.from.split(' ')[0]}</div>
+              </div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                <Plane size={14} color={BLUE} />
+                <div style={{ width: '100%', height: 1, backgroundColor: DIM }} />
+                <div style={{ color: GREY, fontSize: 10 }}>{route.flight.airline}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>{route.flight.arrival}</div>
+                <div style={{ color: GREY, fontSize: 11 }}>{route.flight.to.split(' ')[0]}</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10, borderTop: `1px solid ${DIM}` }}>
+              <span style={{ color: GREY, fontSize: 13 }}>Цена билета</span>
+              <span style={{ color: BLUE, fontSize: 14, fontWeight: 700 }}>{route.flight.price}</span>
+            </div>
+          </div>
+
+          {/* Hotel */}
+          <div style={{ backgroundColor: CARD, borderRadius: 16, padding: 16 }}>
+            <div style={{ color: GREY, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Отель</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div style={{ color: TEXT, fontSize: 15, fontWeight: 600, marginBottom: 4 }}>{route.hotel.name}</div>
+                <div style={{ display: 'flex', gap: 2, marginBottom: 4 }}>
+                  {Array.from({ length: route.hotel.stars }).map((_, i) => (
+                    <Star key={i} size={11} color={GOLD} fill={GOLD} />
+                  ))}
+                </div>
+                <div style={{ color: GREY, fontSize: 12 }}>{route.hotel.address}</div>
+              </div>
+              <div style={{ color: BLUE, fontSize: 14, fontWeight: 700, textAlign: 'right' }}>{route.hotel.price}</div>
+            </div>
+          </div>
+
+          {/* Total cost */}
+          <div style={{ backgroundColor: CARD, borderRadius: 16, padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: TEXT, fontSize: 15, fontWeight: 600 }}>Итого за тур</span>
+            <span style={{ color: BLUE, fontSize: 18, fontWeight: 800 }}>{route.totalCost}</span>
+          </div>
+
+          {/* Save button */}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={onSave}
+            style={{
+              width: '100%', padding: '16px',
+              borderRadius: 16,
+              backgroundColor: isSaved ? CARD2 : BLUE,
+              color: isSaved ? GREY : '#FFF',
+              fontSize: 16, fontWeight: 700,
+              border: isSaved ? `1.5px solid ${DIM}` : 'none',
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              marginBottom: 8,
+              transition: 'background-color 0.2s',
+            }}
+          >
+            {isSaved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
+            {isSaved ? 'Убрать из сохранённых' : 'Сохранить маршрут'}
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─── Public route card ──────────────────────────────────────────────────────────
+
+function PublicRouteCard({ route, onSave, isSaved, onOpen }: {
+  route: PublicRoute; onSave: (e: React.MouseEvent) => void; isSaved: boolean; onOpen: () => void;
 }) {
   return (
     <motion.div
       layout
-      style={{ backgroundColor: CARD, borderRadius: 18, overflow: 'hidden', marginBottom: 12 }}
+      whileTap={{ scale: 0.99 }}
+      onClick={onOpen}
+      style={{ backgroundColor: CARD, borderRadius: 18, overflow: 'hidden', marginBottom: 12, cursor: 'pointer' }}
     >
       <div style={{ position: 'relative' }}>
         <img src={route.coverImage} alt={route.destination} style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }} />
@@ -215,10 +322,7 @@ function PublicRouteCard({ route, onSave, isSaved }: {
           onClick={onSave}
           style={{ position: 'absolute', top: 12, right: 12, width: 38, height: 38, borderRadius: 12, backgroundColor: isSaved ? BLUE : 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
         >
-          {isSaved
-            ? <BookmarkCheck size={18} color="#FFF" />
-            : <Bookmark size={18} color="#FFF" />
-          }
+          {isSaved ? <BookmarkCheck size={18} color="#FFF" /> : <Bookmark size={18} color="#FFF" />}
         </motion.button>
 
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '12px 14px' }}>
@@ -228,7 +332,6 @@ function PublicRouteCard({ route, onSave, isSaved }: {
       </div>
 
       <div style={{ padding: '12px 14px' }}>
-        {/* Author row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: BLUE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -248,36 +351,46 @@ function PublicRouteCard({ route, onSave, isSaved }: {
           </div>
         </div>
 
-        {/* Stats */}
-        <div style={{ display: 'flex', gap: 16, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <Bookmark size={13} color={GREY} />
-            <span style={{ color: GREY, fontSize: 12 }}>{route.saves} сохранений</span>
+        <div style={{ display: 'flex', gap: 16, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <Bookmark size={13} color={GREY} />
+              <span style={{ color: GREY, fontSize: 12 }}>{route.saves} сохранений</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <Star size={13} color={GREY} />
+              <span style={{ color: GREY, fontSize: 12 }}>{route.reviews} отзывов</span>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <Star size={13} color={GREY} />
-            <span style={{ color: GREY, fontSize: 12 }}>{route.reviews} отзывов</span>
-          </div>
+          <span style={{ color: BLUE, fontSize: 12, fontWeight: 600 }}>Подробнее →</span>
         </div>
       </div>
     </motion.div>
   );
 }
 
-// --- Main Page ---
+// ─── Main Page ──────────────────────────────────────────────────────────────────
 
 export default function FeedPage() {
-  const { saveRoute } = useApp();
+  const { saveRoute, unsaveRoute } = useApp();
   const [activeTab, setActiveTab] = useState<'recs' | 'routes'>('recs');
   const [searchQuery, setSearchQuery] = useState('');
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [searchFocused, setSearchFocused] = useState(false);
+  const [detailRoute, setDetailRoute] = useState<PublicRoute | null>(null);
 
-  const handleSave = (route: typeof PUBLIC_ROUTES[0]) => {
-    if (savedIds.has(route.id)) return;
-    setSavedIds(prev => new Set([...prev, route.id]));
-    const author: RouteAuthor = { id: `u_${route.id}`, name: route.authorName, initial: route.authorInitial, rating: route.authorRating };
-    saveRoute(route, author);
+  const handleSave = (route: PublicRoute, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (savedIds.has(route.id)) {
+      // unsave
+      setSavedIds(prev => { const n = new Set(prev); n.delete(route.id); return n; });
+      unsaveRoute(route.id);
+    } else {
+      // save
+      setSavedIds(prev => new Set([...prev, route.id]));
+      const author: RouteAuthor = { id: `u_${route.id}`, name: route.authorName, initial: route.authorInitial, rating: route.authorRating };
+      saveRoute(route, author);
+    }
   };
 
   const filtered = PUBLIC_ROUTES.filter(r =>
@@ -307,35 +420,19 @@ export default function FeedPage() {
             onChange={e => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
-            style={{
-              width: '100%',
-              backgroundColor: CARD,
-              border: `1.5px solid ${searchFocused ? BLUE : 'transparent'}`,
-              borderRadius: 14,
-              padding: '12px 16px 12px 40px',
-              color: TEXT,
-              fontSize: 15,
-              outline: 'none',
-              boxSizing: 'border-box',
-              transition: 'border-color 0.2s',
-            }}
+            style={{ width: '100%', backgroundColor: CARD, border: `1.5px solid ${searchFocused ? BLUE : 'transparent'}`, borderRadius: 14, padding: '12px 16px 12px 40px', color: TEXT, fontSize: 15, outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
           />
         </div>
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 0, backgroundColor: CARD, borderRadius: 14, padding: 4, position: 'relative' }}>
           {(['recs', 'routes'] as const).map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{ flex: 1, position: 'relative', padding: '9px 0', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 11, overflow: 'hidden' }}
-            >
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              style={{ flex: 1, position: 'relative', padding: '9px 0', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 11, overflow: 'hidden' }}>
               {activeTab === tab && (
-                <motion.div
-                  layoutId="feed-tab-bg"
+                <motion.div layoutId="feed-tab-bg"
                   style={{ position: 'absolute', inset: 0, backgroundColor: CARD2, borderRadius: 11 }}
-                  transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-                />
+                  transition={{ type: 'spring', damping: 26, stiffness: 300 }} />
               )}
               <span style={{ position: 'relative', color: activeTab === tab ? TEXT : GREY, fontSize: 14, fontWeight: activeTab === tab ? 600 : 400, transition: 'color 0.2s' }}>
                 {tab === 'recs' ? '✨ Рекомендации' : '🗺 Маршруты'}
@@ -348,17 +445,8 @@ export default function FeedPage() {
       {/* Content */}
       <AnimatePresence mode="wait" initial={false}>
 
-        {/* Рекомендации */}
         {activeTab === 'recs' && (
-          <motion.div
-            key="recs"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22 }}
-            style={{ padding: '0 0 8px' }}
-          >
-            {/* Hot deals */}
+          <motion.div key="recs" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22 }} style={{ padding: '0 0 8px' }}>
             <div style={{ padding: '20px 0 4px 20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                 <Flame size={18} color="#F2585B" />
@@ -369,7 +457,6 @@ export default function FeedPage() {
               </div>
             </div>
 
-            {/* Weekend */}
             <div style={{ padding: '20px 0 4px 20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 20, marginBottom: 14 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -385,7 +472,6 @@ export default function FeedPage() {
               </div>
             </div>
 
-            {/* Events */}
             <div style={{ padding: '20px 20px 4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                 <Calendar size={18} color={GOLD} />
@@ -396,37 +482,23 @@ export default function FeedPage() {
               </div>
             </div>
 
-            {/* AI banner */}
             <div style={{ margin: '20px 20px 4px', background: 'linear-gradient(135deg, #1A3550 0%, #0F2340 100%)', borderRadius: 18, padding: '20px', border: '1px solid rgba(46,166,255,0.2)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <Sparkles size={20} color={BLUE} />
                 <span style={{ color: BLUE, fontSize: 14, fontWeight: 600 }}>ИИ-планировщик</span>
               </div>
-              <div style={{ color: TEXT, fontSize: 16, fontWeight: 700, marginBottom: 6, lineHeight: 1.3 }}>
-                Опиши мечту — получи маршрут
-              </div>
-              <div style={{ color: GREY, fontSize: 13, marginBottom: 14, lineHeight: 1.5 }}>
-                Скажи куда хочешь, когда и с каким бюджетом — AI составит полный план за 15 секунд
-              </div>
+              <div style={{ color: TEXT, fontSize: 16, fontWeight: 700, marginBottom: 6, lineHeight: 1.3 }}>Опиши мечту — получи маршрут</div>
+              <div style={{ color: GREY, fontSize: 13, marginBottom: 14, lineHeight: 1.5 }}>Скажи куда хочешь, когда и с каким бюджетом — AI составит полный план за 15 секунд</div>
               <button style={{ backgroundColor: BLUE, borderRadius: 12, padding: '12px 20px', color: '#FFF', fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer' }}
-                onClick={() => window.location.href = '/search'}
-              >
+                onClick={() => window.location.href = '/search'}>
                 Попробовать →
               </button>
             </div>
           </motion.div>
         )}
 
-        {/* Маршруты */}
         {activeTab === 'routes' && (
-          <motion.div
-            key="routes"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22 }}
-            style={{ padding: '12px 20px 0' }}
-          >
+          <motion.div key="routes" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22 }} style={{ padding: '12px 20px 0' }}>
             {filtered.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>
                 <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
@@ -439,13 +511,26 @@ export default function FeedPage() {
                   key={route.id}
                   route={route}
                   isSaved={savedIds.has(route.id)}
-                  onSave={() => handleSave(route)}
+                  onSave={(e) => handleSave(route, e)}
+                  onOpen={() => setDetailRoute(route)}
                 />
               ))
             )}
           </motion.div>
         )}
 
+      </AnimatePresence>
+
+      {/* Route detail sheet */}
+      <AnimatePresence>
+        {detailRoute && (
+          <RouteDetailSheet
+            route={detailRoute}
+            isSaved={savedIds.has(detailRoute.id)}
+            onSave={() => handleSave(detailRoute)}
+            onClose={() => setDetailRoute(null)}
+          />
+        )}
       </AnimatePresence>
     </div>
   );
